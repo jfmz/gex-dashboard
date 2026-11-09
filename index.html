@@ -44,6 +44,9 @@
   .regime { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
   .regime.positivo { background: rgba(34,197,94,.15); color: var(--call); }
   .regime.negativo { background: rgba(239,68,68,.15); color: var(--put); }
+  .note { background: rgba(96,165,250,.08); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: var(--muted); display: none; }
+  .note b { color: var(--text); }
+  .note.warn { border-left-color: var(--trigger); }
   .error { background: rgba(239,68,68,.1); border: 1px solid var(--put); padding: 16px; border-radius: 12px; display: none; margin-bottom: 16px; }
   footer { color: var(--muted); font-size: 12px; margin-top: 24px; }
   footer code { color: var(--text); }
@@ -56,7 +59,7 @@
     <h1><span id="ticker">SPX</span> · Gamma Exposure</h1>
     <div class="meta" id="meta">a carregar…</div>
     <div class="controls">
-      <select id="tickerSel" aria-label="Ticker"><option value="spx">SPX</option><option value="ndx">NDX</option></select>
+      <select id="tickerSel" aria-label="Instrumento"><option value="spx">SPX</option><option value="ndx">NDX</option></select>
       <label class="range" for="horizonSel">Vencimentos
         <select id="horizonSel" aria-label="Horizonte de vencimentos">
           <option value="all">Todos</option><option value="90">≤ 90 dias</option><option value="30">≤ 30 dias</option><option value="7">≤ 7 dias</option>
@@ -67,6 +70,7 @@
   </header>
 
   <div class="error" id="error"></div>
+  <div class="note" id="note"></div>
 
   <section class="kpis">
     <div class="kpi"><div class="label"><i style="background:var(--spot)"></i>Spot</div><div class="value" id="k-spot">–</div><div class="sub" id="k-chg"></div></div>
@@ -84,7 +88,7 @@
           <h2>GEX por strike</h2>
           <p class="hint">Calls (+) e puts (−) assumindo dealers long calls / short puts. Linhas: spot, Call Wall, Put Wall e Vol Trigger.</p>
         </div>
-        <label class="range">Intervalo ±<span id="rangeVal">8</span>%<input type="range" id="range" min="1" max="20" value="8"></label>
+        <label class="range">Intervalo ±<span id="rangeVal">8</span>%<input type="range" id="range" min="1" max="30" value="8"></label>
       </div>
       <div class="chart"><canvas id="cStrike"></canvas></div>
     </div>
@@ -130,11 +134,18 @@ Chart.defaults.borderColor = C.grid;
 Chart.defaults.plugins.legend.labels.boxWidth = 12;
 
 const $ = id => document.getElementById(id);
-const fmtB = v => (v == null ? '–' : (v >= 0 ? '+' : '−') + '$' + Math.abs(v / 1e9).toFixed(2) + 'B');
-const fmtN = (v, d = 0) => v == null ? '–' : v.toLocaleString('pt-PT', { minimumFractionDigits: d, maximumFractionDigits: d });
+// $ com B (mil milhões) ou M (milhões) conforme a escala
+const fmtB = v => {
+  if (v == null) return '–';
+  const a = Math.abs(v), s = v >= 0 ? '+' : '−';
+  return a >= 1e9 ? `${s}$${(a / 1e9).toFixed(2)}B` : `${s}$${(a / 1e6).toFixed(a >= 1e8 ? 0 : 1)}M`;
+};
+const fmtAxis = v => { const a = Math.abs(v); return a >= 1e9 ? (v / 1e9).toFixed(1) + 'B' : a >= 1e6 ? (v / 1e6).toFixed(0) + 'M' : a >= 1e3 ? (v / 1e3).toFixed(0) + 'K' : String(v); };
+// sem 'd': até 2 casas decimais (strikes de ETFs/ações como 282,5); com 'd': casas fixas
+const fmtN = (v, d) => v == null ? '–' : v.toLocaleString('pt-PT', d == null ? { maximumFractionDigits: 2 } : { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (lvl, spot) => lvl == null ? '' : ((lvl / spot - 1) * 100 >= 0 ? '+' : '') + ((lvl / spot - 1) * 100).toFixed(2) + '% vs spot';
 
-let DATA = null, HIST = [], charts = {};
+let DATA = null, HIST = [], charts = {}, MANIFEST = null, LOADED_ID = null;
 
 const store = { get: k => { try { return localStorage.getItem(k); } catch { return null; } },
                 set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
@@ -164,7 +175,7 @@ function levelLines(d) {
 const annos = arr => Object.fromEntries(arr.map((a, i) => ['a' + i, a]));
 function make(id, cfg) { charts[id]?.destroy(); charts[id] = new Chart($(id), cfg); }
 
-const moneyAxis = { ticks: { callback: v => (v / 1e9).toFixed(1) + 'B' }, grid: { color: C.grid } };
+const moneyAxis = { ticks: { callback: fmtAxis }, grid: { color: C.grid } };
 const strikeAxis = (min, max) => ({ type: 'linear', min, max, ticks: { callback: v => fmtN(v) }, grid: { color: C.grid } });
 
 function renderStrikes() {
@@ -203,6 +214,7 @@ function renderStatic() {
   $('ticker').textContent = d.ticker;
   const expRange = T.first_expiry ? ` · ${T.n_expiries} vencimentos (${T.first_expiry} → ${T.last_expiry})` : '';
   $('meta').textContent = `CBOE: ${d.cboe_timestamp ?? '–'} · gerado ${new Date(d.generated_at).toLocaleString('pt-PT')} · ${fmtN(T.n_options)} opções com OI${expRange}`;
+  renderNote(d);
   $('k-spot').textContent = fmtN(d.spot, 2);
   if (d.prev_close) { const ch = (d.spot / d.prev_close - 1) * 100; $('k-chg').innerHTML = `<span class="${ch >= 0 ? 'pos' : 'neg'}">${ch >= 0 ? '+' : ''}${ch.toFixed(2)}%</span> vs fecho anterior`; }
   $('k-gex').textContent = fmtB(T.net_gex); $('k-gex').className = 'value ' + (T.net_gex >= 0 ? 'pos' : 'neg');
@@ -250,6 +262,48 @@ function renderStatic() {
   });
 }
 
+// Nota por instrumento: composição dos agregados e avisos (ex.: ações individuais)
+function renderNote(d) {
+  const parts = [];
+  const comps = d.components || [];
+  if (comps.length > 1) {
+    const share = DATA.views?.[horizon()]?.components || {};
+    const list = comps.map(c => `<b>${c.symbol}</b> ${share[c.symbol]?.gross_share != null ? fmtN(share[c.symbol].gross_share * 100, 1) + '%' : ''}` +
+      (c.ratio !== 1 ? ` (×${fmtN(c.ratio, 2)})` : '')).join(' · ');
+    parts.push(`Agregado — peso no gamma bruto: ${list}. Strikes dos ETFs convertidos para pontos do ${d.base} pela razão de preços (×) e agrupados de ${d.params?.bucket} em ${d.params?.bucket} pontos; OI em contratos equivalentes do ${d.base}.`);
+  }
+  const noteKey = d.note, noteText = MANIFEST?.notes?.[noteKey];
+  if (noteText) parts.push(noteText);
+  else if (noteKey && comps.length <= 1) parts.push(noteKey);
+  const el = $('note');
+  el.style.display = parts.length ? 'block' : 'none';
+  el.className = 'note' + (noteText ? ' warn' : '');
+  el.innerHTML = parts.join('<br>');
+}
+
+// Constrói o seletor a partir de data/manifest.json (com SPX/NDX estáticos como recurso)
+async function loadManifest() {
+  try {
+    const r = await fetch('data/manifest.json?t=' + Date.now());
+    if (!r.ok) return;
+    MANIFEST = await r.json();
+    const sel = $('tickerSel'), prev = store.get('gex-ticker') || sel.value;
+    sel.innerHTML = '';
+    const groups = {};
+    for (const i of MANIFEST.instruments) (groups[i.group || 'Outros'] ??= []).push(i);
+    for (const [g, items] of Object.entries(groups)) {
+      const og = document.createElement('optgroup'); og.label = g;
+      for (const i of items) {
+        const o = document.createElement('option'); o.value = i.id;
+        o.textContent = i.components.length > 1 ? `${i.label} (${i.components.join('+')})` : i.label;
+        og.appendChild(o);
+      }
+      sel.appendChild(og);
+    }
+    if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  } catch {}
+}
+
 async function load() {
   const t = $('tickerSel').value, bust = '?t=' + Date.now();
   try {
@@ -257,6 +311,11 @@ async function load() {
     if (!a.ok) throw new Error(`data/${t}_latest.json → HTTP ${a.status}`);
     DATA = await a.json();
     HIST = b.ok ? await b.json() : [];
+    if (LOADED_ID !== t) {  // intervalo por defeito do instrumento, só ao mudar de instrumento
+      const r = DATA.default_range || 8;
+      $('range').value = r; $('rangeVal').textContent = r;
+      LOADED_ID = t;
+    }
     $('error').style.display = 'none';
     renderStatic(); renderStrikes();
   } catch (e) {
@@ -267,10 +326,10 @@ async function load() {
 
 $('range').addEventListener('input', e => { $('rangeVal').textContent = e.target.value; if (DATA) renderStrikes(); });
 $('reload').addEventListener('click', load);
-$('tickerSel').addEventListener('change', load);
+$('tickerSel').addEventListener('change', e => { store.set('gex-ticker', e.target.value); load(); });
 $('horizonSel').addEventListener('change', e => { store.set('gex-horizon', e.target.value); if (DATA) { renderStatic(); renderStrikes(); } });
 { const h = store.get('gex-horizon'); if (h && [...$('horizonSel').options].some(o => o.value === h)) $('horizonSel').value = h; }
-load();
+loadManifest().then(load);
 setInterval(load, 5 * 60 * 1000);
 </script>
 </body>

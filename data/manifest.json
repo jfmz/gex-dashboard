@@ -1,0 +1,128 @@
+{
+ "generated_at": "2026-11-09T23:18:03+00:00",
+ "instruments": [
+  {
+   "id": "spx",
+   "label": "SPX",
+   "group": "Índices",
+   "components": [
+    "SPX"
+   ],
+   "generated_at": "2026-11-09T23:17:43+00:00"
+  },
+  {
+   "id": "ndx",
+   "label": "NDX",
+   "group": "Índices",
+   "components": [
+    "NDX"
+   ],
+   "generated_at": "2026-11-09T23:17:45+00:00"
+  },
+  {
+   "id": "rut",
+   "label": "RUT",
+   "group": "Índices",
+   "components": [
+    "RUT"
+   ],
+   "generated_at": "2026-11-09T23:17:46+00:00"
+  },
+  {
+   "id": "spx_agg",
+   "label": "S&P agregado",
+   "group": "Agregados",
+   "components": [
+    "SPX",
+    "SPY",
+    "XSP"
+   ],
+   "generated_at": "2026-11-09T23:17:52+00:00"
+  },
+  {
+   "id": "ndx_agg",
+   "label": "Nasdaq agregado",
+   "group": "Agregados",
+   "components": [
+    "NDX",
+    "QQQ"
+   ],
+   "generated_at": "2026-11-09T23:17:55+00:00"
+  },
+  {
+   "id": "iwm",
+   "label": "IWM",
+   "group": "ETFs",
+   "components": [
+    "IWM"
+   ],
+   "generated_at": "2026-11-09T23:17:56+00:00"
+  },
+  {
+   "id": "gld",
+   "label": "GLD",
+   "group": "ETFs",
+   "components": [
+    "GLD"
+   ],
+   "generated_at": "2026-11-09T23:17:58+00:00"
+  },
+  {
+   "id": "nvda",
+   "label": "NVDA",
+   "group": "Megacaps",
+   "components": [
+    "NVDA"
+   ],
+   "generated_at": "2026-11-09T23:17:58+00:00"
+  },
+  {
+   "id": "tsla",
+   "label": "TSLA",
+   "group": "Megacaps",
+   "components": [
+    "TSLA"
+   ],
+   "generated_at": "2026-11-09T23:17:59+00:00"
+  },
+  {
+   "id": "aapl",
+   "label": "AAPL",
+   "group": "Megacaps",
+   "components": [
+    "AAPL"
+   ],
+   "generated_at": "2026-11-09T23:18:00+00:00"
+  },
+  {
+   "id": "msft",
+   "label": "MSFT",
+   "group": "Megacaps",
+   "components": [
+    "MSFT"
+   ],
+   "generated_at": "2026-11-09T23:18:00+00:00"
+  },
+  {
+   "id": "amzn",
+   "label": "AMZN",
+   "group": "Megacaps",
+   "components": [
+    "AMZN"
+   ],
+   "generated_at": "2026-11-09T23:18:01+00:00"
+  },
+  {
+   "id": "meta",
+   "label": "META",
+   "group": "Megacaps",
+   "components": [
+    "META"
+   ],
+   "generated_at": "2026-11-09T23:18:02+00:00"
+  }
+ ],
+ "notes": {
+  "STOCK": "Ação individual: a convenção 'dealers long calls / short puts' é menos fiável (muito retalho compra calls). Use as walls e a concentração de OI com mais confiança do que o sinal do GEX, sobretudo perto de resultados."
+ }
+}

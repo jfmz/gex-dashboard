@@ -1,0 +1,33 @@
+{
+  "_comment": "Instrumentos calculados pelo workflow. 'components': o 1º é a base (as unidades de preço e strikes); os restantes são convertidos para essa escala pela razão de preços. 'bucket': agrupamento de strikes (pontos da base) para agregados. 'range': intervalo ± % por defeito no gráfico por strike. Dividend yields são aproximados.",
+  "dividend_yield": {
+    "SPX": 0.012, "SPY": 0.012, "XSP": 0.012,
+    "NDX": 0.006, "QQQ": 0.006,
+    "RUT": 0.012, "IWM": 0.012,
+    "GLD": 0.0,
+    "NVDA": 0.0003, "TSLA": 0.0, "AAPL": 0.004, "MSFT": 0.007, "AMZN": 0.0, "META": 0.003
+  },
+  "instruments": [
+    {"id": "spx", "label": "SPX", "group": "Índices", "components": ["SPX"]},
+    {"id": "ndx", "label": "NDX", "group": "Índices", "components": ["NDX"]},
+    {"id": "rut", "label": "RUT", "group": "Índices", "components": ["RUT"]},
+
+    {"id": "spx_agg", "label": "S&P agregado", "group": "Agregados", "components": ["SPX", "SPY", "XSP"], "bucket": 5,
+     "note": "SPX + SPY + XSP. Strikes do SPY e XSP convertidos para pontos do SPX pela razão de preços e agrupados de 5 em 5 pontos."},
+    {"id": "ndx_agg", "label": "Nasdaq agregado", "group": "Agregados", "components": ["NDX", "QQQ"], "bucket": 25,
+     "note": "NDX + QQQ. Strikes do QQQ convertidos para pontos do NDX pela razão de preços e agrupados de 25 em 25 pontos."},
+
+    {"id": "iwm", "label": "IWM", "group": "ETFs", "components": ["IWM"], "range": 10},
+    {"id": "gld", "label": "GLD", "group": "ETFs", "components": ["GLD"], "range": 12},
+
+    {"id": "nvda", "label": "NVDA", "group": "Megacaps", "components": ["NVDA"], "range": 20, "note": "STOCK"},
+    {"id": "tsla", "label": "TSLA", "group": "Megacaps", "components": ["TSLA"], "range": 20, "note": "STOCK"},
+    {"id": "aapl", "label": "AAPL", "group": "Megacaps", "components": ["AAPL"], "range": 15, "note": "STOCK"},
+    {"id": "msft", "label": "MSFT", "group": "Megacaps", "components": ["MSFT"], "range": 15, "note": "STOCK"},
+    {"id": "amzn", "label": "AMZN", "group": "Megacaps", "components": ["AMZN"], "range": 15, "note": "STOCK"},
+    {"id": "meta", "label": "META", "group": "Megacaps", "components": ["META"], "range": 15, "note": "STOCK"}
+  ],
+  "notes": {
+    "STOCK": "Ação individual: a convenção 'dealers long calls / short puts' é menos fiável (muito retalho compra calls). Use as walls e a concentração de OI com mais confiança do que o sinal do GEX, sobretudo perto de resultados."
+  }
+}

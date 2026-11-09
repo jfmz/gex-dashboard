@@ -26,16 +26,11 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: Calcular GEX (SPX, NDX)
-        run: |
-          status=0
-          for t in SPX NDX; do
-            python gex/compute_gex.py --ticker "$t" --out-dir data || { echo "::warning::Falhou $t"; status=1; }
-          done
-          exit $status
+      - name: Calcular GEX (todos os instrumentos de gex/instruments.json)
+        run: python gex/compute_gex.py --all --out-dir data
 
       - name: Commit dos dados
-        if: ${{ !cancelled() }}   # grava os tickers que correram bem mesmo que outro falhe
+        if: ${{ !cancelled() }}   # grava os instrumentos que correram bem mesmo que outro falhe
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -43,7 +38,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Sem alterações"
           else
-            git commit -m "data: GEX SPX+NDX $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "data: GEX $(date -u +'%Y-%m-%d %H:%M UTC')"
             git pull --rebase --autostash
             git push
           fi
