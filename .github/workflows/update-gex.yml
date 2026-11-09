@@ -43,7 +43,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Sem alterações"
           else
-            git commit -m "data: SPX GEX $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git commit -m "data: GEX SPX+NDX $(date -u +'%Y-%m-%d %H:%M UTC')"
             git pull --rebase --autostash
             git push
           fi
