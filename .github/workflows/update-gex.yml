@@ -1,0 +1,49 @@
+name: Atualizar GEX
+
+on:
+  schedule:
+    # Seg-Sex, de 30 em 30 min entre 13:00 e 21:30 UTC (cobre o horário NYSE em EDT e EST)
+    - cron: "*/30 13-21 * * 1-5"
+  workflow_dispatch: {}   # botão "Run workflow" manual
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gex-update
+  cancel-in-progress: false
+
+jobs:
+  compute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: Calcular GEX (SPX, NDX)
+        run: |
+          status=0
+          for t in SPX NDX; do
+            python gex/compute_gex.py --ticker "$t" --out-dir data || { echo "::warning::Falhou $t"; status=1; }
+          done
+          exit $status
+
+      - name: Commit dos dados
+        if: ${{ !cancelled() }}   # grava os tickers que correram bem mesmo que outro falhe
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --cached --quiet; then
+            echo "Sem alterações"
+          else
+            git commit -m "data: SPX GEX $(date -u +'%Y-%m-%d %H:%M UTC')"
+            git pull --rebase --autostash
+            git push
+          fi
