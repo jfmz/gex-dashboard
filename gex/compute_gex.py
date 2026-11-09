@@ -89,6 +89,14 @@ def spot_of(raw: dict) -> float:
     return float(d.get("current_price") or d.get("close"))
 
 
+def ratio_price(raw: dict) -> float:
+    """Preço usado na razão índice/ETF dos agregados. Os ETFs negoceiam after-hours
+    (current_price muda) mas os índices não; 'close' é o último preço da sessão
+    regular em ambos, o que mantém a razão sincronizada fora de horas."""
+    d = raw["data"]
+    return float(d.get("close") or d.get("current_price"))
+
+
 def parse_chain(raw: dict, now: datetime, div_yield: float, ratio: float = 1.0, source: str = "") -> dict:
     """Arrays numpy com as opções úteis, já na escala da base (strike*ratio, mult=100/ratio)."""
     today = now.date()
@@ -307,12 +315,13 @@ def compute_instrument(inst: dict, raws: dict[str, dict], divs: dict, now: datet
     base_spot = spot_of(raws[base])
 
     chains, comp_info = [], []
+    base_ref = ratio_price(raws[base])
     for c in comps:
         s = spot_of(raws[c])
-        ratio = base_spot / s
+        ratio = 1.0 if c == base else base_ref / ratio_price(raws[c])
         chains.append(parse_chain(raws[c], now, divs.get(c, DEFAULT_DIV), ratio, c))
-        comp_info.append({"symbol": c, "spot": round(s, 2), "ratio": round(ratio, 4),
-                          "cboe_timestamp": raws[c].get("timestamp")})
+        comp_info.append({"symbol": c, "spot": round(s, 2), "ratio_price": round(ratio_price(raws[c]), 4),
+                          "ratio": round(ratio, 4), "cboe_timestamp": raws[c].get("timestamp")})
     ch = concat(chains)
 
     views = {}

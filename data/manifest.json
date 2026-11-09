@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-09T23:21:40+00:00",
+ "generated_at": "2026-11-09T23:27:11+00:00",
  "instruments": [
   {
    "id": "spx",
@@ -8,7 +8,7 @@
    "components": [
     "SPX"
    ],
-   "generated_at": "2026-11-09T23:21:35+00:00"
+   "generated_at": "2026-11-09T23:26:52+00:00"
   },
   {
    "id": "ndx",
@@ -17,7 +17,7 @@
    "components": [
     "NDX"
    ],
-   "generated_at": "2026-11-09T23:21:35+00:00"
+   "generated_at": "2026-11-09T23:26:54+00:00"
   },
   {
    "id": "rut",
@@ -26,7 +26,7 @@
    "components": [
     "RUT"
    ],
-   "generated_at": "2026-11-09T23:21:36+00:00"
+   "generated_at": "2026-11-09T23:26:55+00:00"
   },
   {
    "id": "spx_agg",
@@ -37,7 +37,7 @@
     "SPY",
     "XSP"
    ],
-   "generated_at": "2026-11-09T23:21:37+00:00"
+   "generated_at": "2026-11-09T23:27:02+00:00"
   },
   {
    "id": "ndx_agg",
@@ -47,7 +47,7 @@
     "NDX",
     "QQQ"
    ],
-   "generated_at": "2026-11-09T23:21:38+00:00"
+   "generated_at": "2026-11-09T23:27:04+00:00"
   },
   {
    "id": "iwm",
@@ -56,7 +56,7 @@
    "components": [
     "IWM"
    ],
-   "generated_at": "2026-11-09T23:21:38+00:00"
+   "generated_at": "2026-11-09T23:27:05+00:00"
   },
   {
    "id": "gld",
@@ -65,7 +65,7 @@
    "components": [
     "GLD"
    ],
-   "generated_at": "2026-11-09T23:21:39+00:00"
+   "generated_at": "2026-11-09T23:27:06+00:00"
   },
   {
    "id": "nvda",
@@ -74,7 +74,7 @@
    "components": [
     "NVDA"
    ],
-   "generated_at": "2026-11-09T23:21:39+00:00"
+   "generated_at": "2026-11-09T23:27:07+00:00"
   },
   {
    "id": "tsla",
@@ -83,7 +83,7 @@
    "components": [
     "TSLA"
    ],
-   "generated_at": "2026-11-09T23:21:39+00:00"
+   "generated_at": "2026-11-09T23:27:08+00:00"
   },
   {
    "id": "aapl",
@@ -92,7 +92,7 @@
    "components": [
     "AAPL"
    ],
-   "generated_at": "2026-11-09T23:21:39+00:00"
+   "generated_at": "2026-11-09T23:27:09+00:00"
   },
   {
    "id": "msft",
@@ -101,7 +101,7 @@
    "components": [
     "MSFT"
    ],
-   "generated_at": "2026-11-09T23:21:40+00:00"
+   "generated_at": "2026-11-09T23:27:10+00:00"
   },
   {
    "id": "amzn",
@@ -110,7 +110,7 @@
    "components": [
     "AMZN"
    ],
-   "generated_at": "2026-11-09T23:21:40+00:00"
+   "generated_at": "2026-11-09T23:27:10+00:00"
   },
   {
    "id": "meta",
@@ -119,7 +119,7 @@
    "components": [
     "META"
    ],
-   "generated_at": "2026-11-09T23:21:40+00:00"
+   "generated_at": "2026-11-09T23:27:11+00:00"
   }
  ],
  "notes": {
