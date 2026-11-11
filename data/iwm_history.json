@@ -92,5 +92,52 @@
     "net_gex": 73869440.0
    }
   }
+ },
+ {
+  "date": "2026-11-11",
+  "generated_at": "2026-11-11T19:55:44+00:00",
+  "spot": 283.11,
+  "views": {
+   "all": {
+    "call_wall": 285.0,
+    "put_wall": 275.0,
+    "vol_trigger": 284.79,
+    "vol_trigger_ex_next_expiry": 285.78,
+    "max_abs_gex_strike": 270.0,
+    "call_wall_any_strike": 283.0,
+    "put_wall_any_strike": 275.0,
+    "net_gex": -774237944.0
+   },
+   "90": {
+    "call_wall": 285.0,
+    "put_wall": 275.0,
+    "vol_trigger": 283.83,
+    "vol_trigger_ex_next_expiry": 284.54,
+    "max_abs_gex_strike": 283.0,
+    "call_wall_any_strike": 283.0,
+    "put_wall_any_strike": 275.0,
+    "net_gex": -257424516.0
+   },
+   "30": {
+    "call_wall": 285.0,
+    "put_wall": 275.0,
+    "vol_trigger": 282.51,
+    "vol_trigger_ex_next_expiry": 283.3,
+    "max_abs_gex_strike": 283.0,
+    "call_wall_any_strike": 283.0,
+    "put_wall_any_strike": 275.0,
+    "net_gex": 291847818.0
+   },
+   "7": {
+    "call_wall": 287.0,
+    "put_wall": 283.0,
+    "vol_trigger": 280.55,
+    "vol_trigger_ex_next_expiry": 280.48,
+    "max_abs_gex_strike": 283.0,
+    "call_wall_any_strike": 283.0,
+    "put_wall_any_strike": 283.0,
+    "net_gex": 755964303.0
+   }
+  }
  }
 ]
