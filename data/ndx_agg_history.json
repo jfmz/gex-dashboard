@@ -189,48 +189,48 @@
  },
  {
   "date": "2026-11-13",
-  "generated_at": "2026-11-13T20:10:06+00:00",
-  "spot": 27885.17,
+  "generated_at": "2026-11-14T00:56:29+00:00",
+  "spot": 27943.74,
   "views": {
    "all": {
-    "call_wall": 27950.0,
-    "put_wall": 27750.0,
-    "vol_trigger": 28213.09,
-    "vol_trigger_ex_next_expiry": 28493.94,
+    "call_wall": 28775.0,
+    "put_wall": 27000.0,
+    "vol_trigger": 28450.65,
+    "vol_trigger_ex_next_expiry": 28488.53,
     "max_abs_gex_strike": 27950.0,
-    "call_wall_any_strike": 27950.0,
+    "call_wall_any_strike": 28775.0,
     "put_wall_any_strike": 27950.0,
-    "net_gex": -8558181896.0
+    "net_gex": -5130925840.0
    },
    "90": {
-    "call_wall": 27950.0,
-    "put_wall": 27750.0,
-    "vol_trigger": 28178.91,
-    "vol_trigger_ex_next_expiry": 28430.33,
+    "call_wall": 28775.0,
+    "put_wall": 27000.0,
+    "vol_trigger": 28388.01,
+    "vol_trigger_ex_next_expiry": 28419.89,
     "max_abs_gex_strike": 27950.0,
-    "call_wall_any_strike": 27950.0,
+    "call_wall_any_strike": 28775.0,
     "put_wall_any_strike": 27950.0,
-    "net_gex": -7561376832.0
+    "net_gex": -4195267570.0
    },
    "30": {
-    "call_wall": 27950.0,
+    "call_wall": 28775.0,
     "put_wall": 27750.0,
-    "vol_trigger": 28151.19,
-    "vol_trigger_ex_next_expiry": 28425.55,
+    "vol_trigger": 28403.76,
+    "vol_trigger_ex_next_expiry": 28453.01,
     "max_abs_gex_strike": 27950.0,
-    "call_wall_any_strike": 27950.0,
+    "call_wall_any_strike": 28775.0,
     "put_wall_any_strike": 27950.0,
-    "net_gex": -6218689005.0
+    "net_gex": -2978012658.0
    },
    "7": {
-    "call_wall": 27950.0,
-    "put_wall": 27875.0,
-    "vol_trigger": 28126.48,
-    "vol_trigger_ex_next_expiry": 28377.19,
+    "call_wall": 28775.0,
+    "put_wall": 27750.0,
+    "vol_trigger": 28356.78,
+    "vol_trigger_ex_next_expiry": 28407.74,
     "max_abs_gex_strike": 27950.0,
-    "call_wall_any_strike": 27950.0,
+    "call_wall_any_strike": 28775.0,
     "put_wall_any_strike": 27950.0,
-    "net_gex": -5304446526.0
+    "net_gex": -2116049826.0
    }
   }
  }

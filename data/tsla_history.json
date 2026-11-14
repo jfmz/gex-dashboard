@@ -189,48 +189,48 @@
  },
  {
   "date": "2026-11-13",
-  "generated_at": "2026-11-13T20:10:07+00:00",
-  "spot": 391.11,
+  "generated_at": "2026-11-14T00:56:30+00:00",
+  "spot": 387.12,
   "views": {
    "all": {
-    "call_wall": 392.5,
-    "put_wall": 390.0,
-    "vol_trigger": 379.45,
-    "vol_trigger_ex_next_expiry": 366.43,
+    "call_wall": 400.0,
+    "put_wall": 380.0,
+    "vol_trigger": 366.59,
+    "vol_trigger_ex_next_expiry": 363.76,
     "max_abs_gex_strike": 400.0,
-    "call_wall_any_strike": 390.0,
-    "put_wall_any_strike": 390.0,
-    "net_gex": 526110061.0
+    "call_wall_any_strike": 400.0,
+    "put_wall_any_strike": 380.0,
+    "net_gex": 297442680.0
    },
    "90": {
-    "call_wall": 392.5,
-    "put_wall": 390.0,
-    "vol_trigger": 382.97,
-    "vol_trigger_ex_next_expiry": 372.98,
+    "call_wall": 400.0,
+    "put_wall": 380.0,
+    "vol_trigger": 372.83,
+    "vol_trigger_ex_next_expiry": 370.24,
     "max_abs_gex_strike": 400.0,
-    "call_wall_any_strike": 390.0,
-    "put_wall_any_strike": 390.0,
-    "net_gex": 414627419.0
+    "call_wall_any_strike": 400.0,
+    "put_wall_any_strike": 380.0,
+    "net_gex": 192862933.0
    },
    "30": {
-    "call_wall": 392.5,
-    "put_wall": 390.0,
-    "vol_trigger": 384.58,
-    "vol_trigger_ex_next_expiry": 376.96,
-    "max_abs_gex_strike": 392.5,
-    "call_wall_any_strike": 390.0,
-    "put_wall_any_strike": 390.0,
-    "net_gex": 318380860.0
+    "call_wall": 400.0,
+    "put_wall": 380.0,
+    "vol_trigger": 376.83,
+    "vol_trigger_ex_next_expiry": 373.99,
+    "max_abs_gex_strike": 400.0,
+    "call_wall_any_strike": 400.0,
+    "put_wall_any_strike": 380.0,
+    "net_gex": 108159295.0
    },
    "7": {
-    "call_wall": 392.5,
-    "put_wall": 390.0,
-    "vol_trigger": 385.39,
-    "vol_trigger_ex_next_expiry": 379.42,
-    "max_abs_gex_strike": 392.5,
-    "call_wall_any_strike": 390.0,
-    "put_wall_any_strike": 390.0,
-    "net_gex": 270893245.0
+    "call_wall": 400.0,
+    "put_wall": 380.0,
+    "vol_trigger": 379.29,
+    "vol_trigger_ex_next_expiry": 376.35,
+    "max_abs_gex_strike": 400.0,
+    "call_wall_any_strike": 400.0,
+    "put_wall_any_strike": 380.0,
+    "net_gex": 67816786.0
    }
   }
  }

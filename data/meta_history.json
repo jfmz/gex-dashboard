@@ -189,48 +189,48 @@
  },
  {
   "date": "2026-11-13",
-  "generated_at": "2026-11-13T20:10:08+00:00",
-  "spot": 640.41,
+  "generated_at": "2026-11-14T00:56:31+00:00",
+  "spot": 637.52,
   "views": {
    "all": {
     "call_wall": 700.0,
-    "put_wall": 640.0,
-    "vol_trigger": 615.16,
-    "vol_trigger_ex_next_expiry": 597.87,
+    "put_wall": 600.0,
+    "vol_trigger": 598.24,
+    "vol_trigger_ex_next_expiry": 595.75,
     "max_abs_gex_strike": 700.0,
     "call_wall_any_strike": 700.0,
-    "put_wall_any_strike": 640.0,
-    "net_gex": 832245297.0
+    "put_wall_any_strike": 600.0,
+    "net_gex": 533707282.0
    },
    "90": {
     "call_wall": 700.0,
-    "put_wall": 640.0,
-    "vol_trigger": 621.65,
-    "vol_trigger_ex_next_expiry": 609.31,
+    "put_wall": 600.0,
+    "vol_trigger": 609.71,
+    "vol_trigger_ex_next_expiry": 607.68,
     "max_abs_gex_strike": 700.0,
-    "call_wall_any_strike": 640.0,
-    "put_wall_any_strike": 640.0,
-    "net_gex": 672673375.0
+    "call_wall_any_strike": 700.0,
+    "put_wall_any_strike": 600.0,
+    "net_gex": 378072408.0
    },
    "30": {
-    "call_wall": 645.0,
-    "put_wall": 640.0,
-    "vol_trigger": 626.99,
-    "vol_trigger_ex_next_expiry": 621.02,
-    "max_abs_gex_strike": 640.0,
-    "call_wall_any_strike": 640.0,
-    "put_wall_any_strike": 640.0,
-    "net_gex": 438159282.0
+    "call_wall": 650.0,
+    "put_wall": 600.0,
+    "vol_trigger": 621.5,
+    "vol_trigger_ex_next_expiry": 620.23,
+    "max_abs_gex_strike": 700.0,
+    "call_wall_any_strike": 650.0,
+    "put_wall_any_strike": 650.0,
+    "net_gex": 157881057.0
    },
    "7": {
-    "call_wall": 645.0,
-    "put_wall": 640.0,
-    "vol_trigger": 627.42,
-    "vol_trigger_ex_next_expiry": 621.83,
-    "max_abs_gex_strike": 640.0,
-    "call_wall_any_strike": 640.0,
-    "put_wall_any_strike": 640.0,
-    "net_gex": 409508727.0
+    "call_wall": 650.0,
+    "put_wall": 600.0,
+    "vol_trigger": 622.37,
+    "vol_trigger_ex_next_expiry": 621.05,
+    "max_abs_gex_strike": 700.0,
+    "call_wall_any_strike": 650.0,
+    "put_wall_any_strike": 650.0,
+    "net_gex": 132327244.0
    }
   }
  }
