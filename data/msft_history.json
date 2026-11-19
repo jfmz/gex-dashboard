@@ -330,48 +330,48 @@
  },
  {
   "date": "2026-11-18",
-  "generated_at": "2026-11-18T20:59:07+00:00",
-  "spot": 507.39,
+  "generated_at": "2026-11-19T02:18:38+00:00",
+  "spot": 514.0,
   "views": {
    "all": {
-    "call_wall": 525.0,
+    "call_wall": 575.0,
     "put_wall": 500.0,
-    "vol_trigger": 488.43,
-    "vol_trigger_ex_next_expiry": 480.08,
+    "vol_trigger": 482.86,
+    "vol_trigger_ex_next_expiry": 460.32,
     "max_abs_gex_strike": 575.0,
-    "call_wall_any_strike": 525.0,
+    "call_wall_any_strike": 575.0,
     "put_wall_any_strike": 500.0,
-    "net_gex": 552599958.0
+    "net_gex": 804580387.0
    },
    "90": {
-    "call_wall": 525.0,
-    "put_wall": 500.0,
-    "vol_trigger": 499.18,
-    "vol_trigger_ex_next_expiry": 493.47,
+    "call_wall": 575.0,
+    "put_wall": 510.0,
+    "vol_trigger": 495.82,
+    "vol_trigger_ex_next_expiry": 474.27,
     "max_abs_gex_strike": 575.0,
-    "call_wall_any_strike": 525.0,
-    "put_wall_any_strike": 500.0,
-    "net_gex": 340244282.0
+    "call_wall_any_strike": 575.0,
+    "put_wall_any_strike": 510.0,
+    "net_gex": 572677070.0
    },
    "30": {
     "call_wall": 525.0,
-    "put_wall": 500.0,
-    "vol_trigger": 503.16,
-    "vol_trigger_ex_next_expiry": 500.65,
-    "max_abs_gex_strike": 525.0,
+    "put_wall": 510.0,
+    "vol_trigger": 502.84,
+    "vol_trigger_ex_next_expiry": 480.72,
+    "max_abs_gex_strike": 575.0,
     "call_wall_any_strike": 525.0,
-    "put_wall_any_strike": 500.0,
-    "net_gex": 164275472.0
+    "put_wall_any_strike": 510.0,
+    "net_gex": 364866536.0
    },
    "7": {
-    "call_wall": 510.0,
-    "put_wall": 500.0,
-    "vol_trigger": 510.38,
-    "vol_trigger_ex_next_expiry": 513.48,
-    "max_abs_gex_strike": 500.0,
-    "call_wall_any_strike": 510.0,
+    "call_wall": 535.0,
+    "put_wall": 510.0,
+    "vol_trigger": 515.49,
+    "vol_trigger_ex_next_expiry": 511.67,
+    "max_abs_gex_strike": 510.0,
+    "call_wall_any_strike": 535.0,
     "put_wall_any_strike": 510.0,
-    "net_gex": -127199959.0
+    "net_gex": -29673511.0
    }
   }
  }
