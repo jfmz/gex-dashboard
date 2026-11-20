@@ -1,2 +1,6 @@
 numpy>=1.26
 tzdata>=2024.1
+numpy
+pandas
+scipy
+curl_cffi
