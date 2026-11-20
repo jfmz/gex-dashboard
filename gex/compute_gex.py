@@ -33,15 +33,16 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import re
 import sys
 import time as _time
-import urllib.request
 from datetime import datetime, time, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import numpy as np
+from curl_cffi import requests
 
 CBOE_URL = "https://cdn.cboe.com/api/global/delayed_quotes/options/{symbol}.json"
 INDEX_TICKERS = {"SPX", "NDX", "RUT", "VIX", "XSP", "DJX"}
@@ -68,20 +69,28 @@ SYMBOL_RE = re.compile(r"^(?P<root>[A-Z]+)(?P<exp>\d{6})(?P<type>[CP])(?P<strike
 # --------------------------------------------------------------------------- #
 # Dados
 # --------------------------------------------------------------------------- #
+CBOE_HEADERS = {
+    "Accept": "application/json, text/plain, */*",
+    "Accept-Language": "en-US,en;q=0.9",
+    "Origin": "https://www.cboe.com",
+    "Referer": "https://www.cboe.com/delayed_quotes/",
+}
+_SESSION = requests.Session(impersonate="chrome")
+
+
 def fetch_cboe(ticker: str, retries: int = 3) -> dict:
     symbol = f"_{ticker}" if ticker.upper() in INDEX_TICKERS else ticker.upper()
-    req = urllib.request.Request(
-        CBOE_URL.format(symbol=symbol),
-        headers={"User-Agent": "Mozilla/5.0 (gex-dashboard)", "Accept": "application/json"},
-    )
+    url = CBOE_URL.format(symbol=symbol)
     for attempt in range(retries):
         try:
-            with urllib.request.urlopen(req, timeout=60) as resp:
-                return json.load(resp)
+            _time.sleep(random.uniform(1.0, 2.5))
+            resp = _SESSION.get(url, headers=CBOE_HEADERS, timeout=45)
+            resp.raise_for_status()
+            return resp.json()
         except Exception:
             if attempt == retries - 1:
                 raise
-            _time.sleep(3 * (attempt + 1))
+            _time.sleep(4 * (attempt + 1))
 
 
 def spot_of(raw: dict) -> float:
