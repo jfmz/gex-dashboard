@@ -424,48 +424,48 @@
  },
  {
   "date": "2026-11-20",
-  "generated_at": "2026-11-20T22:16:18+00:00",
+  "generated_at": "2026-11-21T01:52:57+00:00",
   "spot": 2581.79,
   "views": {
    "all": {
     "call_wall": 2700.0,
     "put_wall": 2500.0,
-    "vol_trigger": 2822.84,
-    "vol_trigger_ex_next_expiry": 2825.51,
+    "vol_trigger": 2822.08,
+    "vol_trigger_ex_next_expiry": 2824.78,
     "max_abs_gex_strike": 2650.0,
     "call_wall_any_strike": 2700.0,
     "put_wall_any_strike": 2650.0,
-    "net_gex": -2558268767.0
+    "net_gex": -2570534868.0
    },
    "90": {
     "call_wall": 2700.0,
     "put_wall": 2550.0,
-    "vol_trigger": 2814.15,
-    "vol_trigger_ex_next_expiry": 2816.79,
+    "vol_trigger": 2813.44,
+    "vol_trigger_ex_next_expiry": 2816.12,
     "max_abs_gex_strike": 2650.0,
     "call_wall_any_strike": 2700.0,
     "put_wall_any_strike": 2650.0,
-    "net_gex": -2285323749.0
+    "net_gex": -2297419806.0
    },
    "30": {
     "call_wall": 2700.0,
     "put_wall": 2500.0,
-    "vol_trigger": 2814.68,
-    "vol_trigger_ex_next_expiry": 2817.8,
+    "vol_trigger": 2813.8,
+    "vol_trigger_ex_next_expiry": 2816.95,
     "max_abs_gex_strike": 2650.0,
     "call_wall_any_strike": 2700.0,
     "put_wall_any_strike": 2650.0,
-    "net_gex": -2009031144.0
+    "net_gex": -2020499044.0
    },
    "7": {
     "call_wall": 2700.0,
     "put_wall": 2465.0,
-    "vol_trigger": 2754.96,
-    "vol_trigger_ex_next_expiry": 2756.41,
+    "vol_trigger": 2754.38,
+    "vol_trigger_ex_next_expiry": 2755.97,
     "max_abs_gex_strike": 2650.0,
     "call_wall_any_strike": 2700.0,
     "put_wall_any_strike": 2650.0,
-    "net_gex": -652511888.0
+    "net_gex": -659346996.0
    }
   }
  }
