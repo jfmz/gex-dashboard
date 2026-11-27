@@ -1,0 +1,35 @@
+name: Backfill GEX History
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Modo (warmup = 15 sessões reais | proxy = 6 meses estimados)'
+        required: true
+        default: 'warmup'
+        type: choice
+        options:
+          - warmup
+          - proxy
+
+permissions:
+  contents: write
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Instalar dependências
+        run: pip install yfinance numpy
+      - name: Executar backfill
+        run: python gex/backfill_history.py --mode ${{ github.event.inputs.mode }} --days 130
+      - name: Gravar histórico no repositório
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/spx_history.json
+          git commit -m "Backfill SPX historical data" || exit 0
+          git push
