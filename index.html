@@ -44,6 +44,7 @@
   .regime { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 600; }
   .regime.positivo { background: rgba(34,197,94,.15); color: var(--call); }
   .regime.negativo { background: rgba(239,68,68,.15); color: var(--put); }
+  .badge-last { font-family: "JetBrains Mono", monospace; font-size: 12px; background: var(--panel-2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 8px; color: var(--text); }
   .note { background: rgba(96,165,250,.08); border: 1px solid var(--border); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: var(--muted); display: none; }
   .note b { color: var(--text); }
   .note.warn { border-left-color: var(--trigger); }
@@ -116,6 +117,17 @@
       <p class="hint">Último snapshot de cada dia gravado pelo GitHub Actions.</p>
       <div class="chart sm"><canvas id="cHist"></canvas></div>
     </div>
+
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>Gamma Throttle vs. 10-Day Realized Volatility</h2>
+          <p class="hint">Relação histórica entre o Net GEX normalizado (por ponto de índice) e a volatilidade realizada anualizada a 10 sessões. Short gamma (vermelho) tende a amplificar a volatilidade.</p>
+        </div>
+        <div class="badge-last" id="throttleBadge">A aguardar ≥ 11 sessões no histórico…</div>
+      </div>
+      <div class="chart"><canvas id="cThrottle"></canvas></div>
+    </div>
   </section>
 
   <footer>
@@ -134,14 +146,12 @@ Chart.defaults.borderColor = C.grid;
 Chart.defaults.plugins.legend.labels.boxWidth = 12;
 
 const $ = id => document.getElementById(id);
-// $ com B (mil milhões) ou M (milhões) conforme a escala
 const fmtB = v => {
   if (v == null) return '–';
   const a = Math.abs(v), s = v >= 0 ? '+' : '−';
   return a >= 1e9 ? `${s}$${(a / 1e9).toFixed(2)}B` : `${s}$${(a / 1e6).toFixed(a >= 1e8 ? 0 : 1)}M`;
 };
 const fmtAxis = v => { const a = Math.abs(v); return a >= 1e9 ? (v / 1e9).toFixed(1) + 'B' : a >= 1e6 ? (v / 1e6).toFixed(0) + 'M' : a >= 1e3 ? (v / 1e3).toFixed(0) + 'K' : String(v); };
-// sem 'd': até 2 casas decimais (strikes de ETFs/ações como 282,5); com 'd': casas fixas
 const fmtN = (v, d) => v == null ? '–' : v.toLocaleString('pt-PT', d == null ? { maximumFractionDigits: 2 } : { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (lvl, spot) => lvl == null ? '' : ((lvl / spot - 1) * 100 >= 0 ? '+' : '') + ((lvl / spot - 1) * 100).toFixed(2) + '% vs spot';
 
@@ -151,7 +161,6 @@ const store = { get: k => { try { return localStorage.getItem(k); } catch { retu
                 set: (k, v) => { try { localStorage.setItem(k, v); } catch {} } };
 const horizon = () => $('horizonSel').value;
 
-// Junta o snapshot com a vista do horizonte escolhido (suporta também o formato antigo, sem "views")
 function cur() {
   if (!DATA.views) return DATA;
   const v = DATA.views[horizon()] || DATA.views.all;
@@ -160,7 +169,7 @@ function cur() {
 }
 function curHist() {
   const h = horizon();
-  return HIST.map(e => e.views ? { date: e.date, spot: e.spot, ...(e.views[h] || e.views.all) } : e);
+  return HIST.map(e => e.views ? { date: e.date, spot: e.spot, rvol_10d: e.rvol_10d, ...(e.views[h] || e.views.all) } : e);
 }
 
 function vline(x, color, label, position = 'start', dash = [6, 4]) {
@@ -177,6 +186,202 @@ function make(id, cfg) { charts[id]?.destroy(); charts[id] = new Chart($(id), cf
 
 const moneyAxis = { ticks: { callback: fmtAxis }, grid: { color: C.grid } };
 const strikeAxis = (min, max) => ({ type: 'linear', min, max, ticks: { callback: v => fmtN(v) }, grid: { color: C.grid } });
+
+// Regressão polinomial de 2.º grau (y = a*x^2 + b*x + c) para a curva de tendência
+function polyFit2(pts) {
+  if (pts.length < 5) return null;
+  let s0 = pts.length, s1 = 0, s2 = 0, s3 = 0, s4 = 0, t0 = 0, t1 = 0, t2 = 0;
+  for (const { x, y } of pts) {
+    const x2 = x * x;
+    s1 += x; s2 += x2; s3 += x2 * x; s4 += x2 * x2;
+    t0 += y; t1 += x * y; t2 += x2 * y;
+  }
+  const M = [
+    [s0, s1, s2, t0],
+    [s1, s2, s3, t1],
+    [s2, s3, s4, t2]
+  ];
+  for (let i = 0; i < 3; i++) {
+    let maxRow = i;
+    for (let k = i + 1; k < 3; k++) if (Math.abs(M[k][i]) > Math.abs(M[maxRow][i])) maxRow = k;
+    [M[i], M[maxRow]] = [M[maxRow], M[i]];
+    if (Math.abs(M[i][i]) < 1e-12) return null;
+    for (let k = i + 1; k < 3; k++) {
+      const f = M[k][i] / M[i][i];
+      for (let j = i; j < 4; j++) M[k][j] -= f * M[i][j];
+    }
+  }
+  const c = M[2][3] / M[2][2];
+  const b = (M[1][3] - M[1][2] * c) / M[1][1];
+  const a = (M[0][3] - M[0][2] * c - M[0][1] * b) / M[0][0];
+  return x => a * x * x + b * x + c;
+}
+
+// Escala de cor divergente: vermelho (< 0), amarelo (~0), verde (> 0)
+function throttleColor(x, maxAbs, tz) {
+  if (Math.abs(x) <= tz) return '#facc15'; // Zona de transição (amarelo)
+  if (x < 0) {
+    const t = Math.min(1, (Math.abs(x) - tz) / Math.max(1e-6, maxAbs - tz));
+    const g = Math.round(180 * (1 - t) + 45 * t);
+    return `rgba(239, ${g}, 68, 0.85)`;
+  } else {
+    const t = Math.min(1, (x - tz) / Math.max(1e-6, maxAbs - tz));
+    const r = Math.round(190 * (1 - t) + 34 * t);
+    return `rgba(${r}, 197, 94, 0.85)`;
+  }
+}
+
+function renderThrottleScatter() {
+  const H = curHist();
+  const logRets = [];
+  for (let i = 1; i < H.length; i++) {
+    if (H[i].spot > 0 && H[i - 1].spot > 0) logRets.push(Math.log(H[i].spot / H[i - 1].spot));
+    else logRets.push(null);
+  }
+
+  const pts = [];
+  for (let i = 0; i < H.length; i++) {
+    const row = H[i];
+    const spotVal = Number(row.spot);
+    const netGex = Number(row.net_gex);
+    if (!spotVal || isNaN(netGex)) continue;
+
+    // Usa gamma_throttle do JSON se existir; caso contrário calcula em tempo real
+    const gt = row.gamma_throttle != null ? Number(row.gamma_throttle) : +(netGex / (spotVal * 1e6)).toFixed(2);
+
+    // Usa rvol_10d do JSON se existir; caso contrário calcula a partir da janela de 10 sessões
+    let rvol = row.rvol_10d != null ? Number(row.rvol_10d) : null;
+    if (rvol == null && i >= 10) {
+      const win = logRets.slice(i - 10, i).filter(v => v != null);
+      if (win.length === 10) {
+        const mean = win.reduce((a, b) => a + b, 0) / 10;
+        const variance = win.reduce((a, b) => a + (b - mean) ** 2, 0) / 9;
+        rvol = +(Math.sqrt(variance) * Math.sqrt(252) * 100).toFixed(2);
+      }
+    }
+    if (rvol != null && !isNaN(rvol)) {
+      pts.push({ x: gt, y: rvol, date: row.date, spot: spotVal, net_gex: netGex });
+    }
+  }
+
+  const badge = $('throttleBadge');
+  if (pts.length === 0) {
+    badge.textContent = `Histórico atual: ${H.length}/11 sessões necessárias para rVol 10D`;
+    make('cThrottle', { type: 'scatter', data: { datasets: [] }, options: { maintainAspectRatio: false } });
+    return;
+  }
+
+  const last = pts[pts.length - 1];
+  const histPts = pts.slice(0, -1);
+  badge.innerHTML = `Last (${last.date}): <b>Throttle ${last.x >= 0 ? '+' : ''}${last.x.toFixed(2)}</b> · <b>10D rVol ${last.y.toFixed(2)}%</b>`;
+
+  const xs = pts.map(p => p.x);
+  const minX = Math.min(...xs, -2);
+  const maxX = Math.max(...xs, 2);
+  const maxAbs = Math.max(Math.abs(minX), Math.abs(maxX), 1);
+  const tz = Math.max(0.25, +(maxAbs * 0.05).toFixed(2)); // Gamma Transition Zone em torno de 0
+
+  const colors = histPts.map(p => throttleColor(p.x, maxAbs, tz));
+  const datasets = [
+    {
+      label: 'Sessões anteriores',
+      data: histPts,
+      backgroundColor: colors,
+      borderColor: 'transparent',
+      pointRadius: 4.5,
+      pointHoverRadius: 6.5,
+      order: 2
+    },
+    {
+      label: `Last (${last.date})`,
+      data: [last],
+      backgroundColor: '#ffffff',
+      borderColor: C.acc,
+      borderWidth: 2.5,
+      pointRadius: 7.5,
+      pointHoverRadius: 9,
+      order: 0
+    }
+  ];
+
+  const fn = polyFit2(pts);
+  if (fn) {
+    const trendData = [];
+    const steps = 60;
+    for (let s = 0; s <= steps; s++) {
+      const x = minX + (maxX - minX) * (s / steps);
+      const y = fn(x);
+      if (y >= 0) trendData.push({ x: +x.toFixed(2), y: +y.toFixed(2) });
+    }
+    datasets.push({
+      type: 'line',
+      label: 'Tendência (Polinómio 2.º grau)',
+      data: trendData,
+      borderColor: C.acc,
+      borderWidth: 2,
+      borderDash: [6, 4],
+      pointRadius: 0,
+      fill: false,
+      tension: 0.25,
+      order: 1
+    });
+  }
+
+  make('cThrottle', {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'Gamma Volatility Throttle (Net GEX / Spot)', color: C.muted },
+          grid: { color: C.grid },
+          ticks: { callback: v => (v > 0 ? '+' : '') + v }
+        },
+        y: {
+          title: { display: true, text: '10-Day Realized Volatility (%)', color: C.muted },
+          grid: { color: C.grid },
+          beginAtZero: true
+        }
+      },
+      plugins: {
+        annotation: {
+          annotations: {
+            tzLeft: { type: 'line', xMin: -tz, xMax: -tz, borderColor: C.muted, borderWidth: 1, borderDash: [4, 4] },
+            tzRight: {
+              type: 'line', xMin: tz, xMax: tz, borderColor: C.muted, borderWidth: 1, borderDash: [4, 4],
+              label: { display: true, content: 'Gamma Transition Zone', position: 'start', backgroundColor: 'rgba(24,32,51,.9)', color: C.muted, font: { size: 10 }, padding: 4 }
+            },
+            lastCallout: {
+              type: 'label',
+              xValue: last.x,
+              yValue: last.y,
+              yAdjust: -26,
+              backgroundColor: 'rgba(18, 24, 38, 0.92)',
+              borderColor: C.acc,
+              borderWidth: 1,
+              borderRadius: 6,
+              color: C.spot,
+              font: { family: 'JetBrains Mono', size: 11, weight: '600' },
+              padding: { x: 8, y: 4 },
+              content: [`Last: ${last.x >= 0 ? '+' : ''}${last.x.toFixed(2)} | rVol ${last.y.toFixed(1)}%`]
+            }
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => {
+              const p = ctx.raw;
+              if (!p.date) return `${ctx.dataset.label}: ${p.y}%`;
+              return `${p.date} · Throttle: ${p.x >= 0 ? '+' : ''}${p.x.toFixed(2)} · 10D rVol: ${p.y.toFixed(2)}% (Spot ${fmtN(p.spot, 2)})`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
 
 function renderStrikes() {
   const d = cur(), r = +$('range').value / 100;
@@ -260,9 +465,10 @@ function renderStatic() {
       line('Spot', 'spot', C.spot), line('Call Wall', 'call_wall', C.call, [5, 3]), line('Put Wall', 'put_wall', C.put, [5, 3]), line('Vol Trigger', 'vol_trigger', C.trig, [2, 2])] },
     options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: { callback: v => fmtN(v) } }, x: { grid: { display: false } } } }
   });
+
+  renderThrottleScatter();
 }
 
-// Nota por instrumento: composição dos agregados e avisos (ex.: ações individuais)
 function renderNote(d) {
   const parts = [];
   const comps = d.components || [];
@@ -281,7 +487,6 @@ function renderNote(d) {
   el.innerHTML = parts.join('<br>');
 }
 
-// Constrói o seletor a partir de data/manifest.json (com SPX/NDX estáticos como recurso)
 async function loadManifest() {
   try {
     const r = await fetch('data/manifest.json?t=' + Date.now());
@@ -311,7 +516,7 @@ async function load() {
     if (!a.ok) throw new Error(`data/${t}_latest.json → HTTP ${a.status}`);
     DATA = await a.json();
     HIST = b.ok ? await b.json() : [];
-    if (LOADED_ID !== t) {  // intervalo por defeito do instrumento, só ao mudar de instrumento
+    if (LOADED_ID !== t) {
       const r = DATA.default_range || 8;
       $('range').value = r; $('rangeVal').textContent = r;
       LOADED_ID = t;
