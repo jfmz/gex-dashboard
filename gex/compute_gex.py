@@ -376,7 +376,27 @@ def update_history(path: Path, result: dict) -> None:
         "views": {k: {**v["levels"], "net_gex": v["totals"]["net_gex"]} for k, v in result["views"].items()},
     }
     history = [h for h in history if h.get("date") != day] + [entry]  # 1 snapshot por dia (o último)
-    path.write_text(json.dumps(history[-HISTORY_MAX:], indent=1), encoding="utf-8")
+    history = history[-HISTORY_MAX:]
+
+    # Enriquecer histórico com Gamma Throttle (GEX normalizado) e 10-Day Realized Volatility
+    spots = np.array([float(h["spot"]) for h in history], dtype=float)
+    log_rets = np.diff(np.log(spots)) if spots.size > 1 else np.array([])
+
+    for idx, h in enumerate(history):
+        spot_val = float(h["spot"])
+        # 10-Day Realized Volatility anualizada (%) usando os 10 retornos até ao dia idx
+        if idx >= 10:
+            window = log_rets[idx - 10 : idx]
+            h["rvol_10d"] = round(float(np.std(window, ddof=1) * np.sqrt(252) * 100), 2)
+        else:
+            h["rvol_10d"] = None
+
+        # Gamma Throttle por horizonte (Net GEX / Spot em milhões de USD por ponto de índice)
+        for k, v in h.get("views", {}).items():
+            net_gex = float(v.get("net_gex", 0.0))
+            v["gamma_throttle"] = round(net_gex / (spot_val * 1e6), 2) if spot_val else 0.0
+
+    path.write_text(json.dumps(history, indent=1), encoding="utf-8")
 
 
 def write_result(out: Path, result: dict) -> None:
